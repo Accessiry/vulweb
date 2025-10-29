@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { modelsAPI } from '../services/api';
-import { FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 import '../styles/Models.css';
 
 function Models() {

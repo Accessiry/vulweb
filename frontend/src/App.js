@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Models from './components/Models';
 import Datasets from './components/Datasets';
 import Training from './components/Training';
+import ChatWidget from './components/ChatWidget';
 import './App.css';
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
             <Route path="/training" element={<Training />} />
           </Routes>
         </div>
+
+        {/* AI Chat Widget */}
+        <ChatWidget />
       </div>
     </Router>
   );

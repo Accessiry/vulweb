@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { datasetsAPI } from '../services/api';
-import { FaPlus, FaTrash, FaChartBar } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 import '../styles/Datasets.css';
 
 function Datasets() {

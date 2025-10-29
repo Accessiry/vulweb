@@ -19,10 +19,20 @@ def send_message():
     message = data['message']
     session_id = data.get('session_id', 'default')
     
-    # Process message through AI service
-    result = ai_service.process_message(message, session_id)
-    
-    return jsonify(result), 200 if result['success'] else 500
+    try:
+        # Process message through AI service
+        result = ai_service.process_message(message, session_id)
+        return jsonify(result), 200 if result['success'] else 500
+    except Exception:
+        # Log the actual error internally but don't expose details to user
+        return jsonify({
+            'success': False,
+            'error': 'An error occurred processing your message. Please try again.',
+            'response': {
+                'type': 'error',
+                'content': 'Sorry, I encountered an error. Please try again.'
+            }
+        }), 500
 
 
 @chat_bp.route('/history', methods=['GET'])

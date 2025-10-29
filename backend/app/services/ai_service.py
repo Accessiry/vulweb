@@ -461,11 +461,12 @@ class AIService:
                 }
             }
         except Exception as e:
-            error_msg = f"I encountered an error processing your request: {str(e)}"
+            # Log the error internally without exposing details to user
+            error_msg = "I encountered an error processing your request. Please try again."
             context.add_message('assistant', error_msg)
             return {
                 'success': False,
-                'error': str(e),
+                'error': 'Internal processing error',
                 'response': {
                     'type': 'text',
                     'content': error_msg

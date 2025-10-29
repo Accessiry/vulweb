@@ -42,14 +42,17 @@ streamlit run exp_platform/app.py
 exp_platform/
   app.py                 # Streamlit UI
   core/
+    __init__.py
     schemas.py           # Pydantic 数据结构
     registry.py          # 动态加载适配器
     executor.py          # 子进程与日志
     utils.py             # 工具函数
   adapters/
+    __init__.py
     base.py              # 模型适配器基类/协议
     example_cmd.py       # 示例模型适配器（命令行形式）
   datasets/
+    __init__.py
     base.py              # 数据集适配器基类/协议
     example_toy.py       # 示例数据集
   examples/
@@ -92,7 +95,7 @@ exp_platform/
 
 ## 可视化与日志
 
-- UI 会实时读�� `metrics.csv` 并绘制曲线（Streamlit line chart）。
+- UI 会实时读取 `metrics.csv` 并绘制曲线（Streamlit line chart）。
 - 控制台日志（stdout/stderr）会流式显示在 UI。
 - 若你的训练已集成 TensorBoard，也可在适配器里补充 `tb_logdir(run_dir)`，后续版本可内嵌或提供“一键打开 TB”按钮（当前版本以 CSV 为主）。
 
@@ -112,12 +115,6 @@ exp_platform/
 - Q: 我有很多模型，如何管理？
   - A: 每个模型一个适配器文件，系统自动发现；也可以在一个文件里导出多个适配器。
 - Q: 我只想执行 shell 脚本/Makefile 可以吗？
-  - A: 可以，命令列表里用你熟悉的可执行入口即可（例如 `["bash", "scripts/train.sh", "..."]`）。
+  - A: 可以，命令列表里用你熟悉的可执行入口即可（例如 "[bash, scripts/train.sh, ...]"）。
 - Q: 我已经有 TensorBoard 了，还需要 CSV 吗？
   - A: 当前版本以 CSV 实时绘图为主；若你已经写入 TB，可在适配器中标出 `tb_logdir`，我们后续可以增强 UI 内嵌 TB。
-
----
-
-注意：为避免与 Python 标准库模块 `platform` 名称冲突，本目录名与包名使用 `exp_platform`。在运行时请使用：
-- `streamlit run exp_platform/app.py`
-- 以及在自定义适配器中使用 `from exp_platform...` 的导入路径。

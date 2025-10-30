@@ -22,6 +22,15 @@ class Config:
     # Training settings
     TRAINING_OUTPUT_FOLDER = os.path.join(basedir, '..', 'training_outputs')
     
+    # AI Agent settings
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    AI_MODEL = os.environ.get('AI_MODEL') or 'gpt-3.5-turbo'
+    AI_TEMPERATURE = float(os.environ.get('AI_TEMPERATURE', '0.7'))
+    AI_MAX_TOKENS = int(os.environ.get('AI_MAX_TOKENS', '1000'))
+    
+    # WebSocket settings
+    SOCKETIO_CORS_ALLOWED_ORIGINS = os.environ.get('SOCKETIO_CORS_ALLOWED_ORIGINS', '*')
+    
     @staticmethod
     def init_app(app):
         # Create necessary directories

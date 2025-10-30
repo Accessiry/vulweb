@@ -4,6 +4,14 @@ A comprehensive web platform for code vulnerability detection using machine lear
 
 ## Features
 
+### 🤖 AI Chat Assistant (NEW!)
+- Natural language interface for platform interaction
+- Multi-agent system with specialized AI agents
+- Real-time WebSocket communication
+- Conversation history and context management
+- Suggested queries and smart responses
+- Mobile-responsive floating chat widget
+
 ### 🔧 Model Management
 - Upload and register ML models
 - View model information and performance metrics
@@ -28,6 +36,7 @@ A comprehensive web platform for code vulnerability detection using machine lear
 - Intuitive navigation between modules
 - Real-time data updates
 - Interactive charts and visualizations
+- AI-powered chat assistant
 
 ## Tech Stack
 
@@ -36,6 +45,8 @@ A comprehensive web platform for code vulnerability detection using machine lear
 - **Database**: SQLAlchemy with SQLite (can be switched to PostgreSQL)
 - **Async Tasks**: Celery + Redis
 - **API**: RESTful design with CORS support
+- **WebSocket**: Flask-SocketIO for real-time chat
+- **AI**: Multi-agent architecture for intelligent assistance
 
 ### Frontend
 - **Framework**: React 18
@@ -43,6 +54,7 @@ A comprehensive web platform for code vulnerability detection using machine lear
 - **HTTP Client**: Axios
 - **Charts**: Recharts
 - **Icons**: React Icons
+- **WebSocket**: Socket.IO Client
 
 ### Infrastructure
 - **Containerization**: Docker & Docker Compose
@@ -182,6 +194,28 @@ redis-server
 
 ## Usage Guide
 
+### 0. Using AI Chat Assistant 🤖
+
+**Access the Chat:**
+- Click the chat button (💬) in the bottom-right corner of any page
+- The chat widget will open with a welcome message
+
+**Example Queries:**
+- "Show all models"
+- "List datasets with more than 100 samples"
+- "Show running training tasks"
+- "What file formats are supported?"
+- "Show platform statistics"
+
+**Features:**
+- Natural language queries
+- Suggested quick actions
+- Conversation history
+- Real-time responses
+- Works across all pages
+
+See [AI_CHAT_GUIDE.md](AI_CHAT_GUIDE.md) for detailed documentation.
+
 ### 1. Managing Models
 
 **Add a New Model:**
@@ -284,6 +318,25 @@ GET    /api/training/tasks/:id            - Get task by ID
 POST   /api/training/tasks                - Create new training task
 POST   /api/training/tasks/:id/stop       - Stop running task
 GET    /api/training/tasks/:id/metrics    - Get task metrics
+POST   /api/training/tasks/:id/metrics    - Add task metric
+DELETE /api/training/tasks/:id            - Delete task
+```
+
+### Chat API (NEW!)
+
+```
+POST   /api/chat/message    - Send chat message
+GET    /api/chat/history    - Get conversation history
+POST   /api/chat/clear      - Clear conversation history
+```
+
+**WebSocket Events:**
+- `connect` - Connect to chat server
+- `join` - Join a session
+- `chat_message` - Send message
+- `chat_response` - Receive response
+
+See [AI_CHAT_GUIDE.md](AI_CHAT_GUIDE.md) for detailed API documentation.
 POST   /api/training/tasks/:id/metrics    - Add task metric
 DELETE /api/training/tasks/:id            - Delete task
 ```

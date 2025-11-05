@@ -46,12 +46,17 @@ def send_message():
     
     # Generate AI response using RAG service
     rag_service = get_rag_service()
-    ai_content = rag_service.generate_response(
-        query=data['content'],
-        context=context,
-        use_llm=use_llm,
-        llm_config=llm_config
-    )
+    try:
+        ai_content = rag_service.generate_response(
+            query=data['content'],
+            context=context,
+            use_llm=use_llm,
+            llm_config=llm_config
+        )
+    except Exception as e:
+        # Log the error for debugging but don't expose stack trace to user
+        print(f"Error generating RAG response: {e}")
+        ai_content = "抱歉，处理您的消息时出现错误。请稍后再试。"
     
     ai_response = {
         'role': 'assistant',
@@ -98,10 +103,13 @@ def update_config():
             'message': 'Configuration validated successfully',
             'test_response': test_response
         }), 200
+    except ValueError as e:
+        # Validation errors (e.g., invalid endpoint)
+        return jsonify({'error': f'Configuration validation failed: {str(e)}'}), 400
     except Exception as e:
-        return jsonify({
-            'error': f'Configuration test failed: {str(e)}'
-        }), 400
+        # Log the error but don't expose details
+        print(f"Configuration test error: {e}")
+        return jsonify({'error': 'Configuration test failed. Please check your settings.'}), 400
 
 @chat_bp.route('/knowledge-base/reload', methods=['POST'])
 def reload_knowledge_base():
@@ -111,4 +119,6 @@ def reload_knowledge_base():
         rag_service.reload_knowledge_base()
         return jsonify({'message': 'Knowledge base reloaded successfully'}), 200
     except Exception as e:
-        return jsonify({'error': f'Failed to reload knowledge base: {str(e)}'}), 500
+        # Log the error but don't expose details
+        print(f"Knowledge base reload error: {e}")
+        return jsonify({'error': 'Failed to reload knowledge base'}), 500

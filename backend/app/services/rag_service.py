@@ -460,6 +460,10 @@ class RAGService:
         model = config.get('model', 'qwen-turbo')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
+        # Validate endpoint to prevent SSRF
+        if not endpoint.startswith(('https://dashscope.aliyuncs.com', 'https://dashscope-intl.aliyuncs.com')):
+            raise ValueError("Invalid Qwen API endpoint. Must be an official Alibaba Dashscope endpoint.")
+        
         headers = {
             'Authorization': f'Bearer {api_key}',
             'Content-Type': 'application/json'
@@ -507,6 +511,11 @@ class RAGService:
         
         # Call ERNIE API
         endpoint = config.get('endpoint', 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions')
+        
+        # Validate endpoint to prevent SSRF
+        if not endpoint.startswith('https://aip.baidubce.com'):
+            raise ValueError("Invalid ERNIE API endpoint. Must be an official Baidu endpoint.")
+        
         url = f"{endpoint}?access_token={access_token}"
         
         data = {
@@ -530,6 +539,10 @@ class RAGService:
         endpoint = config.get('endpoint', 'https://open.bigmodel.cn/api/paas/v4/chat/completions')
         model = config.get('model', 'glm-4')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
+        
+        # Validate endpoint to prevent SSRF
+        if not endpoint.startswith('https://open.bigmodel.cn'):
+            raise ValueError("Invalid Zhipu AI endpoint. Must be an official Zhipu endpoint.")
         
         headers = {
             'Authorization': f'Bearer {api_key}',
@@ -559,6 +572,11 @@ class RAGService:
         endpoint = config.get('endpoint', 'https://api.openai.com/v1')
         model = config.get('model', 'gpt-3.5-turbo')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
+        
+        # For OpenAI, we allow some flexibility for compatible APIs
+        # but still validate it's a proper HTTPS URL
+        if not endpoint.startswith('https://'):
+            raise ValueError("API endpoint must use HTTPS protocol")
         
         client = OpenAI(
             api_key=api_key,

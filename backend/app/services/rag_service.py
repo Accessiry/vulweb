@@ -22,9 +22,28 @@ except ImportError:
     SENTENCE_TRANSFORMERS_AVAILABLE = False
     print("Warning: sentence-transformers not available. Embedding model will be disabled.")
 
+# Import requests for LLM API calls
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+    print("Warning: requests not available. LLM API calls will be disabled.")
+
+# Import OpenAI for OpenAI-compatible APIs
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
 
 class RAGService:
     """RAG service for intelligent chat with knowledge base"""
+    
+    # Configuration constants
+    DEFAULT_API_TIMEOUT = 30  # seconds
+    DEFAULT_EMBEDDING_MODEL = 'paraphrase-multilingual-MiniLM-L12-v2'
     
     def __init__(self, knowledge_base_path: str = None, collection_name: str = "vulweb_kb"):
         """Initialize RAG service
@@ -121,6 +140,7 @@ class RAGService:
         documents = []
         metadatas = []
         ids = []
+        failed_count = 0
         
         for filename in os.listdir(self.knowledge_base_path):
             if filename.endswith('.json'):
@@ -142,6 +162,7 @@ class RAGService:
                         ids.append(doc['id'])
                 except Exception as e:
                     print(f"Error loading {filename}: {e}")
+                    failed_count += 1
         
         if documents:
             try:
@@ -156,6 +177,8 @@ class RAGService:
                     ids=ids
                 )
                 print(f"Loaded {len(documents)} documents into knowledge base")
+                if failed_count > 0:
+                    print(f"Failed to load {failed_count} documents")
             except Exception as e:
                 print(f"Error adding documents to vector database: {e}")
     
@@ -429,11 +452,13 @@ class RAGService:
     
     def _call_qwen_api(self, system_prompt: str, user_prompt: str, config: Dict) -> str:
         """Call Alibaba Qwen API"""
-        import requests
+        if not REQUESTS_AVAILABLE:
+            return "requests library not available"
         
         api_key = config.get('api_key')
         endpoint = config.get('endpoint', 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation')
         model = config.get('model', 'qwen-turbo')
+        timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
         headers = {
             'Authorization': f'Bearer {api_key}',
@@ -453,7 +478,7 @@ class RAGService:
             }
         }
         
-        response = requests.post(endpoint, headers=headers, json=data, timeout=30)
+        response = requests.post(endpoint, headers=headers, json=data, timeout=timeout)
         response.raise_for_status()
         result = response.json()
         
@@ -461,11 +486,13 @@ class RAGService:
     
     def _call_ernie_api(self, system_prompt: str, user_prompt: str, config: Dict) -> str:
         """Call Baidu ERNIE API"""
-        import requests
+        if not REQUESTS_AVAILABLE:
+            return "requests library not available"
         
         # ERNIE uses access token authentication
         api_key = config.get('api_key')
         secret_key = config.get('secret_key')
+        timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
         # Get access token
         token_url = 'https://aip.baidubce.com/oauth/2.0/token'
@@ -474,7 +501,7 @@ class RAGService:
             'client_id': api_key,
             'client_secret': secret_key
         }
-        token_response = requests.get(token_url, params=token_params, timeout=30)
+        token_response = requests.get(token_url, params=token_params, timeout=timeout)
         token_response.raise_for_status()
         access_token = token_response.json()['access_token']
         
@@ -488,7 +515,7 @@ class RAGService:
             ]
         }
         
-        response = requests.post(url, json=data, timeout=30)
+        response = requests.post(url, json=data, timeout=timeout)
         response.raise_for_status()
         result = response.json()
         
@@ -496,11 +523,13 @@ class RAGService:
     
     def _call_zhipu_api(self, system_prompt: str, user_prompt: str, config: Dict) -> str:
         """Call Zhipu AI API"""
-        import requests
+        if not REQUESTS_AVAILABLE:
+            return "requests library not available"
         
         api_key = config.get('api_key')
         endpoint = config.get('endpoint', 'https://open.bigmodel.cn/api/paas/v4/chat/completions')
         model = config.get('model', 'glm-4')
+        timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
         headers = {
             'Authorization': f'Bearer {api_key}',
@@ -515,7 +544,7 @@ class RAGService:
             ]
         }
         
-        response = requests.post(endpoint, headers=headers, json=data, timeout=30)
+        response = requests.post(endpoint, headers=headers, json=data, timeout=timeout)
         response.raise_for_status()
         result = response.json()
         
@@ -523,15 +552,18 @@ class RAGService:
     
     def _call_openai_api(self, system_prompt: str, user_prompt: str, config: Dict) -> str:
         """Call OpenAI API (can also be used with compatible APIs)"""
-        from openai import OpenAI
+        if not OPENAI_AVAILABLE:
+            return "openai library not available"
         
         api_key = config.get('api_key')
         endpoint = config.get('endpoint', 'https://api.openai.com/v1')
         model = config.get('model', 'gpt-3.5-turbo')
+        timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
         client = OpenAI(
             api_key=api_key,
-            base_url=endpoint
+            base_url=endpoint,
+            timeout=timeout
         )
         
         response = client.chat.completions.create(

@@ -35,7 +35,9 @@ def send_message():
             'datasets': datasets,
             'tasks': tasks
         }
-    except:
+    except Exception as e:
+        # If database query fails, continue with empty context
+        print(f"Warning: Failed to fetch system context: {e}")
         context = {}
     
     # Get LLM configuration from request (optional)

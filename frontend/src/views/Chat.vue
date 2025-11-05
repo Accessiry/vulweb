@@ -180,14 +180,24 @@ const formatTime = (timestamp) => {
 }
 
 const formatMessage = (content) => {
-  // Convert markdown-like formatting to HTML
-  let formatted = content
+  // Escape HTML first to prevent XSS
+  const escapeHtml = (text) => {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+  }
+  
+  // Escape the content first
+  let formatted = escapeHtml(content)
+  
+  // Then apply markdown-like formatting to HTML
+  formatted = formatted
     // Bold text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     // Code blocks (inline)
     .replace(/`(.+?)`/g, '<code>$1</code>')
-    // Links
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // Links (with safe URL validation)
+    .replace(/\[(.+?)\]\((https?:\/\/.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     // Line breaks
     .replace(/\n/g, '<br/>')
     // Lists (simple handling)

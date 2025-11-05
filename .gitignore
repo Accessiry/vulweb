@@ -70,3 +70,4 @@ logs/*.pid
 # Backup
 *-backup/
 
+chroma_db/

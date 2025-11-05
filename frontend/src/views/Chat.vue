@@ -120,20 +120,13 @@ const sendMessage = async () => {
   loading.value = true
   
   try {
-    // Get context data
-    const [models, datasets, tasks] = await Promise.all([
-      modelsAPI.getAll(),
-      datasetsAPI.getAll(),
-      trainingAPI.getTasks()
-    ])
-    
-    // Generate AI response based on question
-    const response = await generateResponse(question, { models, datasets, tasks })
+    // Send message to backend RAG service
+    const response = await chatAPI.sendMessage({ content: question })
     
     const aiMessage = {
       role: 'assistant',
-      content: response,
-      timestamp: new Date().toISOString()
+      content: response.content,
+      timestamp: response.timestamp
     }
     
     messages.value.push(aiMessage)
@@ -145,154 +138,6 @@ const sendMessage = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const generateResponse = async (question, context) => {
-  const q = question.toLowerCase()
-  
-  // Model related questions
-  if (q.includes('模型') || q.includes('model')) {
-    if (q.includes('上传') || q.includes('添加')) {
-      return `要上传模型，请按照以下步骤操作：
-
-1. 点击左侧菜单的"模型管理"
-2. 点击页面右上角的"上传模型"按钮
-3. 填写模型信息：
-   - 模型名称（必填）
-   - 描述（可选）
-   - 版本号（默认1.0.0）
-   - 模型类型（选择漏洞检测或细粒度定位）
-4. 选择模型文件（支持.pkl, .pt, .pth, .h5, .onnx格式）
-5. 点击"上传"按钮
-
-当前系统中有 <strong>${context.models.length}</strong> 个模型。`
-    }
-    
-    if (q.includes('多少') || q.includes('数量')) {
-      const modelList = context.models.map((m, i) => `${i + 1}. ${m.name} (${m.model_type || '未指定类型'})`).join('\n')
-      return `当前系统中共有 <strong>${context.models.length}</strong> 个模型：
-
-${modelList || '暂无模型'}
-
-您可以在"模型管理"页面查看详细信息。`
-    }
-  }
-  
-  // Dataset related questions
-  if (q.includes('数据集') || q.includes('dataset')) {
-    if (q.includes('上传') || q.includes('添加')) {
-      return `要上传数据集，请按照以下步骤操作：
-
-1. 点击左侧菜单的"数据集管理"
-2. 点击页面右上角的"上传数据集"按钮
-3. 填写数据集信息：
-   - 数据集名称（必填）
-   - 描述（可选）
-4. 选择数据集文件（支持.json, .csv, .txt, .zip格式）
-5. 点击"上传"按钮
-
-系统会自动分析数据集内容，提取样本数量和漏洞/安全样本的分布。
-
-当前系统中有 <strong>${context.datasets.length}</strong> 个数据集。`
-    }
-    
-    if (q.includes('多少') || q.includes('数量')) {
-      const datasetList = context.datasets.map((d, i) => 
-        `${i + 1}. ${d.name} (${d.num_samples || 0}个样本)`
-      ).join('\n')
-      return `当前系统中共有 <strong>${context.datasets.length}</strong> 个数据集：
-
-${datasetList || '暂无数据集'}
-
-您可以在"数据集管理"页面查看详细统计信息。`
-    }
-  }
-  
-  // Training related questions
-  if (q.includes('训练') || q.includes('training') || q.includes('任务')) {
-    if (q.includes('创建') || q.includes('开始') || q.includes('如何')) {
-      return `要创建训练任务，请按照以下步骤操作：
-
-1. 确保已上传模型和数据集
-2. 点击左侧菜单的"训练任务"
-3. 点击页面右上角的"创建训练任务"按钮
-4. 填写训练配置：
-   - 任务名称
-   - 选择模型
-   - 选择数据集
-   - 设置训练轮次（epochs）
-5. 点击"创建并开始训练"按钮
-
-系统会自动开始训练，您可以实时查看训练进度和指标。
-
-当前有 <strong>${context.tasks.filter(t => t.status === 'running').length}</strong> 个任务正在运行，
-<strong>${context.tasks.filter(t => t.status === 'completed').length}</strong> 个任务已完成。`
-    }
-    
-    if (q.includes('状态') || q.includes('进度')) {
-      const runningTasks = context.tasks.filter(t => t.status === 'running')
-      const completedTasks = context.tasks.filter(t => t.status === 'completed')
-      const pendingTasks = context.tasks.filter(t => t.status === 'pending')
-      const failedTasks = context.tasks.filter(t => t.status === 'failed')
-      
-      return `训练任务状态统计：
-
-- 🔄 运行中：<strong>${runningTasks.length}</strong> 个
-- ✅ 已完成：<strong>${completedTasks.length}</strong> 个
-- ⏳ 等待中：<strong>${pendingTasks.length}</strong> 个
-- ❌ 失败：<strong>${failedTasks.length}</strong> 个
-
-总计：<strong>${context.tasks.length}</strong> 个训练任务
-
-您可以在"训练任务"页面查看详细信息和实时指标。`
-    }
-  }
-  
-  // System related questions
-  if (q.includes('系统') || q.includes('功能') || q.includes('帮助')) {
-    return `VulWeb 代码漏洞检测模型管理系统主要功能：
-
-📦 <strong>模型管理</strong>
-- 上传和管理机器学习模型
-- 查看模型性能指标
-- 支持多种模型格式
-
-📊 <strong>数据集管理</strong>
-- 上传和管理训练数据集
-- 自动分析数据集统计信息
-- 支持多种数据格式
-
-🚀 <strong>训练任务</strong>
-- 创建和管理训练任务
-- 实时监控训练进度
-- 可视化训练指标
-
-📈 <strong>结果展示</strong>
-- 查看训练历史和结果
-- 交互式图表可视化
-- 性能指标分析
-
-💬 <strong>AI对话</strong>
-- 智能问答助手
-- 快速操作指导
-
-⚙️ <strong>系统设置</strong>
-- AI API配置
-- 系统参数设置
-
-如需帮助，可以询问具体功能的使用方法！`
-  }
-  
-  // Default response
-  return `抱歉，我不太理解您的问题。您可以尝试询问：
-
-- 如何上传模型？
-- 如何创建训练任务？
-- 当前有多少个数据集？
-- 训练任务的状态是什么？
-- 系统有哪些功能？
-
-或者点击下方的快捷问题开始对话。`
 }
 
 const askQuestion = (question) => {
@@ -335,10 +180,31 @@ const formatTime = (timestamp) => {
 }
 
 const formatMessage = (content) => {
-  // Convert markdown-like formatting to HTML
-  return content
+  // Escape HTML first to prevent XSS
+  const escapeHtml = (text) => {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+  }
+  
+  // Escape the content first
+  let formatted = escapeHtml(content)
+  
+  // Then apply markdown-like formatting to HTML
+  formatted = formatted
+    // Bold text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Code blocks (inline)
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    // Links (with safe URL validation)
+    .replace(/\[(.+?)\]\((https?:\/\/.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    // Line breaks
     .replace(/\n/g, '<br/>')
+    // Lists (simple handling)
+    .replace(/^- (.+?)(<br\/>|$)/gm, '• $1$2')
+    .replace(/^(\d+)\. (.+?)(<br\/>|$)/gm, '$1. $2$3')
+  
+  return formatted
 }
 
 onMounted(() => {
@@ -448,6 +314,31 @@ onMounted(() => {
 .message-text {
   line-height: 1.6;
   word-wrap: break-word;
+}
+
+.message-text code {
+  background-color: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.message.user .message-text code {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-text a {
+  color: #409eff;
+  text-decoration: none;
+}
+
+.message-text a:hover {
+  text-decoration: underline;
+}
+
+.message.user .message-text a {
+  color: #fff;
 }
 
 .typing-indicator {

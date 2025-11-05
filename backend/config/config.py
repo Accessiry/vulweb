@@ -22,6 +22,13 @@ class Config:
     # Training settings
     TRAINING_OUTPUT_FOLDER = os.path.join(basedir, '..', 'training_outputs')
     
+    # AI/LLM configuration
+    AI_PROVIDER = os.environ.get('AI_PROVIDER') or 'none'  # qwen, ernie, zhipu, openai, none
+    AI_API_KEY = os.environ.get('AI_API_KEY') or ''
+    AI_SECRET_KEY = os.environ.get('AI_SECRET_KEY') or ''  # For ERNIE
+    AI_ENDPOINT = os.environ.get('AI_ENDPOINT') or ''
+    AI_MODEL = os.environ.get('AI_MODEL') or 'qwen-turbo'
+    
     @staticmethod
     def init_app(app):
         # Create necessary directories

@@ -1,0 +1,16 @@
+{
+  "id": "kb_api_001",
+  "title": "API接口文档",
+  "content": "VulWeb系统API接口说明：\n\n**模型管理API：**\n- GET /api/models - 获取所有模型列表\n- GET /api/models/:id - 获取指定模型详情\n- POST /api/models - 创建/上传新模型\n- PUT /api/models/:id - 更新模型信息\n- DELETE /api/models/:id - 删除指定模型\n\n**数据集管理API：**\n- GET /api/datasets - 获取所有数据集列表\n- GET /api/datasets/:id - 获取指定数据集详情\n- POST /api/datasets - 上传新数据集\n- PUT /api/datasets/:id - 更新数据集信息\n- DELETE /api/datasets/:id - 删除指定数据集\n- GET /api/datasets/:id/stats - 获取数据集统计信息\n\n**训练任务API：**\n- GET /api/training/tasks - 获取所有训练任务\n- GET /api/training/tasks/:id - 获取指定任务详情\n- POST /api/training/tasks - 创建新训练任务\n- POST /api/training/tasks/:id/stop - 停止运行中的任务\n- GET /api/training/tasks/:id/metrics - 获取任务训练指标\n- DELETE /api/training/tasks/:id - 删除训练任务\n\n**AI对话API：**\n- POST /api/chat/message - 发送消息给AI\n- GET /api/chat/history - 获取对话历史\n- DELETE /api/chat/history - 清空对话历史\n\n**通用响应格式：**\n- 成功：200/201状态码，返回JSON数据\n- 错误：4xx/5xx状态码，返回错误信息\n\n**认证：**\n当前版本不需要认证，未来版本将添加JWT认证\n\n**限流：**\n- API调用频率：100次/分钟\n- 文件上传：最大500MB",
+  "category": "api_documentation",
+  "tags": [
+    "API",
+    "接口",
+    "文档",
+    "开发"
+  ],
+  "metadata": {
+    "last_updated": "2024-11-05",
+    "difficulty": "advanced"
+  }
+}

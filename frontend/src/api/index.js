@@ -75,7 +75,9 @@ export const trainingAPI = {
 export const chatAPI = {
   sendMessage: (data) => api.post('/chat/message', data),
   getHistory: () => api.get('/chat/history'),
-  clearHistory: () => api.delete('/chat/history')
+  clearHistory: () => api.delete('/chat/history'),
+  updateConfig: (data) => api.post('/chat/config', data),
+  reloadKnowledgeBase: () => api.post('/chat/knowledge-base/reload')
 }
 
 export default api

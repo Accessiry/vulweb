@@ -237,15 +237,24 @@ class RAGService:
             content_lower = doc['content'].lower()
             tags = [tag.lower() for tag in doc['tags']]
             
-            # Check query words in title, content, and tags
+            # For Chinese text, check if query substring is in content
+            if query_lower in title_lower:
+                score += 10
+            if query_lower in content_lower:
+                score += 5
+            for tag in tags:
+                if query_lower in tag or tag in query_lower:
+                    score += 8
+            
+            # Also check individual words (for mixed Chinese/English)
             for word in query_lower.split():
                 if len(word) > 1:  # Skip single character words
                     if word in title_lower:
-                        score += 5
+                        score += 3
                     if word in content_lower:
                         score += 1
                     if any(word in tag for tag in tags):
-                        score += 3
+                        score += 2
             
             if score > 0:
                 scored_docs.append((score, doc))

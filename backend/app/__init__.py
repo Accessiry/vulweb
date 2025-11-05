@@ -24,10 +24,12 @@ def create_app(config_name='default'):
     from .api.models import model_bp
     from .api.datasets import dataset_bp
     from .api.training import training_bp
+    from .api.chat import chat_bp
     
     app.register_blueprint(model_bp)
     app.register_blueprint(dataset_bp)
     app.register_blueprint(training_bp)
+    app.register_blueprint(chat_bp)
     
     # Create database tables
     with app.app_context():

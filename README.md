@@ -1,310 +1,337 @@
-# VulWeb - Code Vulnerability Detection ML Platform
+# VulWeb - 代码漏洞检测模型管理系统
 
-A comprehensive web platform for code vulnerability detection using machine learning. This system provides an intuitive interface for managing models, datasets, and training tasks with real-time monitoring and visualization.
+一个完整的Web平台，用于代码漏洞检测机器学习模型的管理、训练和评估。系统提供直观的界面来管理模型、数据集和训练任务，支持实时监控和可视化，专为Windows WSL环境优化。
 
-## Features
+## 功能特性
 
-### 🔧 Model Management
-- Upload and register ML models
-- View model information and performance metrics
-- Support for multiple model types (vulnerability detection, fine-grained location)
-- Version management
+### 🔧 模型管理
+- 上传和注册机器学习模型
+- 查看模型信息和性能指标
+- 支持多种模型类型（漏洞检测、细粒度定位）
+- 版本管理和追踪
 
-### 📊 Dataset Management
-- Upload and store datasets
-- Automatic format validation (JSON, CSV)
-- Dataset statistics and preprocessing
-- Support for code vulnerability detection data formats
+### 📊 数据集管理
+- 上传和存储数据集
+- 自动格式验证（JSON, CSV, TXT, ZIP）
+- 数据集统计信息和预处理
+- 支持代码漏洞检测数据格式
 
-### 🚀 Training & Validation
-- Create and manage training tasks
-- Real-time training progress monitoring
-- Interactive metrics visualization with charts
-- Training history and results analysis
-- One-click training start
+### 🚀 训练与验证
+- 创建和管理训练任务
+- 实时训练进度监控
+- 交互式指标可视化（ECharts）
+- 训练历史和结果分析
+- 一键启动训练
 
-### 🎨 User Interface
-- Modern, responsive web interface
-- Intuitive navigation between modules
-- Real-time data updates
-- Interactive charts and visualizations
+### 💬 AI对话智能体
+- 智能问答助手
+- 操作指导和帮助
+- 系统状态查询
+- 支持国内AI服务（通义千问、文心一言等）
 
-## Tech Stack
+### 🎨 用户界面
+- 现代化响应式Web界面
+- 直观的模块导航
+- 实时数据更新
+- 交互式图表和可视化
+- 暗黑模式支持
 
-### Backend
-- **Framework**: Flask 3.0
-- **Database**: SQLAlchemy with SQLite (can be switched to PostgreSQL)
-- **Async Tasks**: Celery + Redis
-- **API**: RESTful design with CORS support
+### ⚙️ 系统设置
+- AI API配置
+- 系统参数调整
+- 数据管理工具
 
-### Frontend
-- **Framework**: React 18
-- **Routing**: React Router v6
-- **HTTP Client**: Axios
-- **Charts**: Recharts
-- **Icons**: React Icons
+## 技术栈
 
-### Infrastructure
-- **Containerization**: Docker & Docker Compose
-- **Web Server**: Nginx (for frontend)
-- **WSGI Server**: Gunicorn (for backend)
+### 后端
+- **框架**: Flask 3.0
+- **数据库**: SQLAlchemy + SQLite（可切换到PostgreSQL）
+- **API**: RESTful设计，支持CORS
+- **文件处理**: Werkzeug
 
-## Project Structure
+### 前端
+- **框架**: Vue.js 3.3
+- **UI组件**: Element Plus 2.4（国内可访问）
+- **路由**: Vue Router 4
+- **状态管理**: Pinia
+- **HTTP客户端**: Axios
+- **图表**: ECharts 5.4（百度出品，国内友好）
+- **构建工具**: Vite 5
+
+### 部署环境
+- **目标平台**: Windows WSL (Ubuntu)
+- **无需Docker**: 直接部署，易于维护
+- **一键脚本**: 自动化安装和启动
+
+## 项目结构
 
 ```
 vulweb/
-├── backend/
-│   ├── app/
-│   │   ├── api/            # API endpoints
-│   │   │   ├── models.py
-│   │   │   ├── datasets.py
-│   │   │   └── training.py
-│   │   ├── models/         # Database models
-│   │   │   └── __init__.py
-│   │   ├── services/       # Business logic
-│   │   │   ├── dataset_service.py
-│   │   │   └── training_service.py
-│   │   └── utils/          # Utility functions
-│   │       └── file_utils.py
-│   ├── config/             # Configuration
-│   │   └── config.py
-│   ├── requirements.txt
-│   ├── run.py
-│   └── Dockerfile
-├── frontend/
+├── backend/                          # Flask后端
+│   ├── app/                          # 主应用
+│   │   ├── api/                      # API端点
+│   │   │   ├── models.py            # 模型管理API
+│   │   │   ├── datasets.py          # 数据集管理API
+│   │   │   ├── training.py          # 训练任务API
+│   │   │   └── chat.py              # AI对话API
+│   │   ├── models/                   # 数据库模型
+│   │   ├── services/                 # 业务逻辑
+│   │   └── utils/                    # 工具函数
+│   ├── config/                       # 配置文件
+│   ├── requirements.txt              # Python依赖
+│   └── run.py                        # 入口文件
+├── frontend/                         # Vue.js前端
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   │   ├── Models.js
-│   │   │   ├── Datasets.js
-│   │   │   └── Training.js
-│   │   ├── services/       # API services
-│   │   │   └── api.js
-│   │   ├── styles/         # CSS styles
-│   │   ├── App.js
-│   │   └── index.js
-│   ├── public/
-│   ├── package.json
-│   ├── nginx.conf
-│   └── Dockerfile
-└── docker-compose.yml
+│   │   ├── views/                    # 页面组件
+│   │   │   ├── Dashboard.vue        # 首页Dashboard
+│   │   │   ├── Models.vue           # 模型管理
+│   │   │   ├── Datasets.vue         # 数据集管理
+│   │   │   ├── Training.vue         # 训练任务
+│   │   │   ├── Results.vue          # 结果展示
+│   │   │   ├── Chat.vue             # AI对话
+│   │   │   └── Settings.vue         # 系统设置
+│   │   ├── router/                   # 路由配置
+│   │   ├── api/                      # API服务
+│   │   └── App.vue                   # 主应用
+│   ├── package.json                  # Node.js依赖
+│   └── vite.config.js                # Vite配置
+├── scripts/                          # 部署脚本
+│   ├── install.sh                    # 环境安装脚本
+│   ├── start.sh                      # 启动脚本
+│   └── stop.sh                       # 停止脚本
+├── config/                           # 系统配置
+│   └── config.ini                    # 配置文件
+├── docs/                             # 文档
+│   ├── WSL_DEPLOYMENT.md            # WSL部署指南
+│   └── USER_GUIDE.md                # 用户手册
+├── models/                           # 模型存储目录
+├── datasets/                         # 数据集存储目录
+└── logs/                             # 日志目录
 ```
 
-## Installation & Setup
+## 快速开始（WSL环境）
 
-### Prerequisites
+### 前置要求
+- Windows 10/11 with WSL 2
 - Python 3.10+
 - Node.js 18+
-- Docker & Docker Compose (for containerized deployment)
-- Redis (for async tasks)
+- 至少4GB RAM
 
-### Quick Start with Docker
+### 一键部署
 
-1. Clone the repository:
+1. **安装WSL**（如已安装跳过）
+```powershell
+# 在Windows PowerShell（管理员）中运行
+wsl --install
+```
+
+2. **启动WSL并克隆项目**
 ```bash
+wsl
+cd ~
 git clone https://github.com/Accessiry/vulweb.git
 cd vulweb
 ```
 
-2. Start the application:
+3. **运行安装脚本**
 ```bash
-docker-compose up -d
+./scripts/install.sh
 ```
 
-3. Access the application:
-- Frontend: http://localhost
-- Backend API: http://localhost:5000
-
-### Manual Setup
-
-#### Backend Setup
-
-1. Navigate to backend directory:
+4. **安装依赖**
 ```bash
+# 后端依赖
 cd backend
-```
-
-2. Create virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-```
+cd ..
 
-4. Set environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-5. Initialize database:
-```bash
-python run.py
-```
-
-The backend will be available at http://localhost:5000
-
-#### Frontend Setup
-
-1. Navigate to frontend directory:
-```bash
+# 前端依赖
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
+cd ..
 ```
 
-3. Start development server:
+5. **启动系统**
 ```bash
-npm start
+./scripts/start.sh
 ```
 
-The frontend will be available at http://localhost:3000
+6. **访问系统**
+在Windows浏览器中打开：
+- **前端**: http://localhost:3000
+- **后端API**: http://localhost:5000
 
-#### Redis Setup (for async tasks)
-
+7. **停止系统**
 ```bash
-# Install Redis
-# Ubuntu/Debian:
-sudo apt-get install redis-server
-
-# macOS:
-brew install redis
-
-# Start Redis
-redis-server
+./scripts/stop.sh
 ```
 
-## Usage Guide
+### 手动部署
 
-### 1. Managing Models
+详细的手动部署步骤请参考 [WSL部署指南](docs/WSL_DEPLOYMENT.md)。
 
-**Add a New Model:**
-1. Navigate to the "Models" page
-2. Click "Add Model" button
-3. Fill in model information:
-   - Name (required)
-   - Description
-   - Version
-   - Model Type
-   - Upload model file (.pkl, .pt, .pth, .h5)
-4. Click "Create Model"
+## 使用指南
 
-**View Models:**
-- All models are displayed in a grid layout
-- Each card shows model name, description, type, version, and accuracy
+### 1. 管理模型
 
-**Delete Models:**
-- Click the trash icon on any model card to delete it
+**添加新模型:**
+1. 进入"模型管理"页面
+2. 点击"上传模型"按钮
+3. 填写模型信息：
+   - 名称（必填）
+   - 描述
+   - 版本
+   - 模型类型
+   - 上传模型文件（.pkl, .pt, .pth, .h5, .onnx）
+4. 点击"上传"
 
-### 2. Managing Datasets
+**查看模型:**
+- 所有模型以卡片形式展示
+- 每个卡片显示名称、描述、类型、版本和准确率
 
-**Upload a Dataset:**
-1. Navigate to the "Datasets" page
-2. Click "Add Dataset" button
-3. Fill in dataset information:
-   - Name (required)
-   - Description
-   - Upload dataset file (.json, .csv, .txt, .zip)
-4. Click "Upload Dataset"
+**删除模型:**
+- 点击模型卡片上的删除图标
 
-**View Dataset Statistics:**
-- Each dataset card displays:
-  - Format
-  - File size
-  - Number of samples
-  - Number of vulnerable/safe samples
-  - Preprocessing status
+### 2. 管理数据集
 
-**Delete Datasets:**
-- Click the trash icon on any dataset card to delete it
+**上传数据集:**
+1. 进入"数据集管理"页面
+2. 点击"上传数据集"按钮
+3. 填写数据集信息：
+   - 名称（必填）
+   - 描述
+   - 上传数据集文件（.json, .csv, .txt, .zip）
+4. 点击"上传"
 
-### 3. Training Models
+**查看数据集统计:**
+- 每个数据集卡片显示：
+  - 格式
+  - 文件大小
+  - 样本数量
+  - 漏洞样本数/安全样本数
+  - 预处理状态
 
-**Start Training:**
-1. Navigate to the "Training" page
-2. Click "Start Training" button
-3. Configure training task:
-   - Task name
-   - Select a model
-   - Select a dataset
-   - Number of epochs
-4. Click "Start Training"
+**删除数据集:**
+- 点击数据集卡片上的删除图标
 
-**Monitor Training:**
-- View real-time training progress
-- Interactive charts showing:
-  - Loss over time
-  - Accuracy over time
-  - Training vs Validation metrics
-- Current metrics displayed in cards:
+### 3. 训练模型
+
+**开始训练:**
+1. 进入"训练任务"页面
+2. 点击"创建训练任务"按钮
+3. 配置训练任务：
+   - 任务名称
+   - 选择模型
+   - 选择数据集
+   - 设置训练轮次（epochs）
+4. 点击"创建并开始训练"
+
+**监控训练:**
+- 查看实时训练进度
+- 交互式图表显示：
+  - Loss随时间变化
+  - Accuracy随时间变化
+  - 训练集 vs 验证集指标
+- 当前指标显示：
   - Loss
   - Accuracy
   - Validation Loss
   - Validation Accuracy
 
-**Manage Tasks:**
-- Stop running tasks
-- Delete completed tasks
-- View training history
+**管理任务:**
+- 停止运行中的任务
+- 删除已完成的任务
+- 查看训练历史
 
-## API Documentation
+### 4. AI对话
 
-### Models API
+**使用AI助手:**
+1. 进入"AI对话"页面
+2. 在输入框中输入问题
+3. 查看AI回复
+4. 使用快捷问题快速提问
+
+**配置AI服务:**
+1. 进入"系统设置"
+2. 配置AI API：
+   - 选择服务商（通义千问、文心一言等）
+   - 输入API Key
+   - 设置Endpoint和模型
+3. 测试连接
+4. 保存配置
+
+### 5. 查看结果
+
+**查看训练结果:**
+1. 进入"结果展示"页面
+2. 浏览已完成的训练任务
+3. 点击"查看详情"查看：
+   - 训练配置
+   - 最终性能指标
+   - 完整训练曲线
+   - 训练时长
+
+## API文档
+
+### 模型API
 
 ```
-GET    /api/models          - Get all models
-GET    /api/models/:id      - Get model by ID
-POST   /api/models          - Create new model
-PUT    /api/models/:id      - Update model
-DELETE /api/models/:id      - Delete model
+GET    /api/models          - 获取所有模型
+GET    /api/models/:id      - 获取指定模型
+POST   /api/models          - 创建新模型
+PUT    /api/models/:id      - 更新模型
+DELETE /api/models/:id      - 删除模型
 ```
 
-### Datasets API
+### 数据集API
 
 ```
-GET    /api/datasets             - Get all datasets
-GET    /api/datasets/:id         - Get dataset by ID
-POST   /api/datasets             - Create new dataset
-PUT    /api/datasets/:id         - Update dataset
-DELETE /api/datasets/:id         - Delete dataset
-GET    /api/datasets/:id/stats   - Get dataset statistics
+GET    /api/datasets             - 获取所有数据集
+GET    /api/datasets/:id         - 获取指定数据集
+POST   /api/datasets             - 创建新数据集
+PUT    /api/datasets/:id         - 更新数据集
+DELETE /api/datasets/:id         - 删除数据集
+GET    /api/datasets/:id/stats   - 获取数据集统计
 ```
 
-### Training API
+### 训练API
 
 ```
-GET    /api/training/tasks                - Get all training tasks
-GET    /api/training/tasks/:id            - Get task by ID
-POST   /api/training/tasks                - Create new training task
-POST   /api/training/tasks/:id/stop       - Stop running task
-GET    /api/training/tasks/:id/metrics    - Get task metrics
-POST   /api/training/tasks/:id/metrics    - Add task metric
-DELETE /api/training/tasks/:id            - Delete task
+GET    /api/training/tasks                - 获取所有训练任务
+GET    /api/training/tasks/:id            - 获取指定任务
+POST   /api/training/tasks                - 创建新任务
+POST   /api/training/tasks/:id/stop       - 停止任务
+GET    /api/training/tasks/:id/metrics    - 获取任务指标
+DELETE /api/training/tasks/:id            - 删除任务
 ```
 
-## Integrating Your Training Code
+### AI对话API
 
-The platform provides a standardized interface for integrating custom training code. 
+```
+POST   /api/chat/message      - 发送消息
+GET    /api/chat/history      - 获取对话历史
+DELETE /api/chat/history      - 清空对话历史
+```
 
-### Training Service Integration
+## 集成训练代码
 
-Edit `backend/app/services/training_service.py`:
+系统提供标准化接口用于集成自定义训练代码。
+
+### 训练服务集成
+
+编辑 `backend/app/services/training_service.py`:
 
 ```python
 def start_training_task(task_id, config):
-    """Integrate your training code here"""
+    """在此集成您的训练代码"""
     task = TrainingTask.query.get(task_id)
     
-    # Import your training module
+    # 导入您的训练模块
     from your_module import train_model
     
-    # Call your training function
+    # 调用训练函数
     train_model(
         model_path=task.model.file_path,
         dataset_path=task.dataset.file_path,
@@ -313,9 +340,9 @@ def start_training_task(task_id, config):
     )
 ```
 
-### Reporting Training Progress
+### 报告训练进度
 
-During training, report metrics to the API:
+在训练过程中向API报告指标：
 
 ```python
 import requests
@@ -334,147 +361,134 @@ def report_progress(task_id, epoch, metrics):
     )
 ```
 
-## Configuration
+## 配置
 
-### Backend Configuration
+### 后端配置
 
-Edit `backend/config/config.py` or set environment variables:
+编辑 `config/config.ini`:
 
-```python
-SECRET_KEY                # Application secret key
-DATABASE_URL             # Database connection string
-CELERY_BROKER_URL        # Redis URL for Celery
-CELERY_RESULT_BACKEND    # Redis URL for results
-UPLOAD_FOLDER            # Directory for uploads
-MAX_CONTENT_LENGTH       # Max file size (bytes)
+```ini
+[backend]
+host = 0.0.0.0
+port = 5000
+secret_key = your-secret-key-here
+
+[database]
+type = sqlite
+path = app.db
+
+[upload]
+max_file_size = 524288000  # 500MB
+
+[ai]
+provider = qwen
+api_key = your-api-key-here
+endpoint = https://dashscope.aliyuncs.com/api/v1
+model = qwen-turbo
 ```
 
-### Frontend Configuration
+### 前端配置
 
-Create `.env` file in frontend directory:
+在frontend目录创建 `.env` 文件：
 
 ```
-REACT_APP_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5000/api
 ```
 
-## Development
+## 开发
 
-### Running Tests
+### 运行测试
 
-Backend:
+后端：
 ```bash
 cd backend
 pytest
 ```
 
-Frontend:
+前端：
 ```bash
 cd frontend
 npm test
 ```
 
-### Code Style
+### 代码风格
 
-Backend uses Python best practices with Flask conventions.
-Frontend follows React best practices with functional components and hooks.
+- 后端遵循Flask最佳实践
+- 前端遵循Vue.js 3 Composition API风格
+- 使用Element Plus组件规范
 
-## Architecture
+## 故障排除
 
-### System Architecture
+### 常见问题
 
-```
-┌─────────────┐         ┌─────────────┐
-│   Frontend  │────────▶│   Backend   │
-│   (React)   │  HTTP   │   (Flask)   │
-└─────────────┘         └──────┬──────┘
-                               │
-                    ┌──────────┼──────────┐
-                    │          │          │
-                ┌───▼───┐  ┌───▼───┐  ┌──▼───┐
-                │SQLite │  │ Redis │  │Celery│
-                └───────┘  └───────┘  └──────┘
-```
+**后端无法启动:**
+- 检查Python版本（需要3.10+）
+- 确保所有依赖已安装
+- 验证数据库可访问
 
-### Design Patterns
+**前端无法启动:**
+- 检查Node版本（需要18+）
+- 清除npm缓存：`npm cache clean --force`
+- 删除node_modules并重新安装
 
-- **Backend**: MVC pattern with blueprints
-- **Frontend**: Component-based architecture
-- **API**: RESTful design
-- **Database**: Repository pattern with SQLAlchemy ORM
+**训练任务无法启动:**
+- 检查模型和数据集文件是否存在
+- 验证文件路径正确
+- 查看后端日志
 
-## Extensibility
+**端口被占用:**
+```bash
+# 查找占用端口的进程
+netstat -ano | findstr :5000
+netstat -ano | findstr :3000
 
-### Adding New Model Types
-
-The system is designed for extensibility with reserved interfaces for:
-- Fine-grained vulnerability location
-- Custom model architectures
-- Additional preprocessing steps
-
-### Adding New Dataset Formats
-
-Extend `backend/app/services/dataset_service.py` to support new formats:
-
-```python
-def analyze_custom_format(file_path):
-    # Your custom format analysis
-    return {
-        'num_samples': count,
-        'num_vulnerable': vulnerable_count,
-        'num_safe': safe_count
-    }
+# 停止进程
+kill -9 <PID>
 ```
 
-## Troubleshooting
+详细故障排除请参考 [WSL部署指南](docs/WSL_DEPLOYMENT.md)。
 
-### Common Issues
+## 文档
 
-**Backend won't start:**
-- Check Python version (3.10+)
-- Ensure all dependencies are installed
-- Verify database is accessible
+- [WSL部署指南](docs/WSL_DEPLOYMENT.md) - 完整的WSL环境部署说明
+- [用户手册](docs/USER_GUIDE.md) - 详细的功能使用指南
+- [项目结构](PROJECT_STRUCTURE.md) - 代码结构说明
+- [快速开始](QUICKSTART.md) - 快速入门指南
 
-**Frontend won't start:**
-- Check Node version (18+)
-- Clear npm cache: `npm cache clean --force`
-- Delete node_modules and reinstall
+## 贡献
 
-**Training tasks not starting:**
-- Ensure Redis is running
-- Check Celery worker status
-- Verify dataset and model files exist
+欢迎贡献！请查看 [贡献指南](CONTRIBUTING.md)。
 
-## Contributing
+## 许可证
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+本项目采用MIT许可证。
 
-## License
+## 支持
 
-This project is licensed under the MIT License.
+如有问题或建议：
+- 创建GitHub Issue
+- 发送邮件至：support@vulweb.com
+- 查看文档和Wiki
 
-## Support
+## 致谢
 
-For issues and questions:
-- Create an issue on GitHub
-- Contact: support@vulweb.com
+使用以下优秀的开源技术构建：
+- Vue.js 3 - 渐进式JavaScript框架
+- Element Plus - Vue 3 UI组件库
+- Flask - Python Web框架
+- ECharts - 数据可视化库
+- SQLAlchemy - Python ORM
 
-## Roadmap
+## 路线图
 
-- [ ] PostgreSQL support
-- [ ] User authentication and authorization
-- [ ] Advanced model performance analytics
-- [ ] Distributed training support
-- [ ] Model versioning and comparison
-- [ ] API rate limiting
-- [ ] Kubernetes deployment support
-- [ ] Fine-grained vulnerability location module
-- [ ] Model ensemble support
-- [ ] Advanced data augmentation
-
-## Acknowledgments
-
-Built with modern web technologies for the code vulnerability detection research community.
+- [x] 基础模型管理
+- [x] 数据集管理
+- [x] 训练任务系统
+- [x] AI对话功能
+- [x] WSL部署支持
+- [ ] PostgreSQL支持
+- [ ] 用户认证和授权
+- [ ] 高级模型分析
+- [ ] 分布式训练支持
+- [ ] 模型版本对比
+- [ ] Kubernetes部署支持

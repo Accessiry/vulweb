@@ -1,0 +1,82 @@
+[
+  {
+    "code": "def unsafe_query(user_input):\n    query = \"SELECT * FROM users WHERE id = '\" + user_input + \"'\"\n    return execute_query(query)",
+    "label": 1,
+    "vulnerability_type": "SQL Injection"
+  },
+  {
+    "code": "def safe_query(user_input):\n    query = \"SELECT * FROM users WHERE id = ?\"\n    return execute_query(query, (user_input,))",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "import pickle\n\ndef load_data(filename):\n    with open(filename, 'rb') as f:\n        return pickle.load(f)",
+    "label": 1,
+    "vulnerability_type": "Insecure Deserialization"
+  },
+  {
+    "code": "import json\n\ndef load_data(filename):\n    with open(filename, 'r') as f:\n        return json.load(f)",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "def execute_command(cmd):\n    import os\n    os.system(cmd)",
+    "label": 1,
+    "vulnerability_type": "Command Injection"
+  },
+  {
+    "code": "def execute_command(cmd):\n    import subprocess\n    allowed_commands = ['ls', 'pwd', 'whoami']\n    if cmd in allowed_commands:\n        subprocess.run([cmd], shell=False)",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "def get_user_data(user_id):\n    eval('get_data(' + user_id + ')')",
+    "label": 1,
+    "vulnerability_type": "Code Injection"
+  },
+  {
+    "code": "def get_user_data(user_id):\n    return database.query(User).filter_by(id=user_id).first()",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "def read_file(filename):\n    with open(filename, 'r') as f:\n        return f.read()",
+    "label": 1,
+    "vulnerability_type": "Path Traversal"
+  },
+  {
+    "code": "def read_file(filename):\n    import os\n    safe_path = os.path.join(UPLOAD_DIR, os.path.basename(filename))\n    if not safe_path.startswith(UPLOAD_DIR):\n        raise ValueError('Invalid path')\n    with open(safe_path, 'r') as f:\n        return f.read()",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "password = 'admin123'\ndb_connection = 'mongodb://admin:admin123@localhost:27017'",
+    "label": 1,
+    "vulnerability_type": "Hardcoded Credentials"
+  },
+  {
+    "code": "import os\npassword = os.environ.get('DB_PASSWORD')\ndb_connection = f'mongodb://{username}:{password}@{host}:{port}'",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "def generate_token():\n    import random\n    return str(random.randint(100000, 999999))",
+    "label": 1,
+    "vulnerability_type": "Weak Random"
+  },
+  {
+    "code": "def generate_token():\n    import secrets\n    return secrets.token_hex(32)",
+    "label": 0,
+    "vulnerability_type": "None"
+  },
+  {
+    "code": "<script>alert(user_input)</script>",
+    "label": 1,
+    "vulnerability_type": "XSS"
+  },
+  {
+    "code": "from html import escape\noutput = escape(user_input)",
+    "label": 0,
+    "vulnerability_type": "None"
+  }
+]

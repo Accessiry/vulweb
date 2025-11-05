@@ -460,8 +460,11 @@ class RAGService:
         model = config.get('model', 'qwen-turbo')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
-        # Validate endpoint to prevent SSRF
-        if not endpoint.startswith(('https://dashscope.aliyuncs.com', 'https://dashscope-intl.aliyuncs.com')):
+        # Validate endpoint to prevent SSRF - use strict whitelist
+        allowed_hosts = ['dashscope.aliyuncs.com', 'dashscope-intl.aliyuncs.com']
+        from urllib.parse import urlparse
+        parsed = urlparse(endpoint)
+        if parsed.scheme != 'https' or parsed.hostname not in allowed_hosts:
             raise ValueError("Invalid Qwen API endpoint. Must be an official Alibaba Dashscope endpoint.")
         
         headers = {
@@ -512,8 +515,10 @@ class RAGService:
         # Call ERNIE API
         endpoint = config.get('endpoint', 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions')
         
-        # Validate endpoint to prevent SSRF
-        if not endpoint.startswith('https://aip.baidubce.com'):
+        # Validate endpoint to prevent SSRF - use strict hostname check
+        from urllib.parse import urlparse
+        parsed = urlparse(endpoint)
+        if parsed.scheme != 'https' or parsed.hostname != 'aip.baidubce.com':
             raise ValueError("Invalid ERNIE API endpoint. Must be an official Baidu endpoint.")
         
         url = f"{endpoint}?access_token={access_token}"
@@ -540,8 +545,10 @@ class RAGService:
         model = config.get('model', 'glm-4')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
-        # Validate endpoint to prevent SSRF
-        if not endpoint.startswith('https://open.bigmodel.cn'):
+        # Validate endpoint to prevent SSRF - use strict hostname check
+        from urllib.parse import urlparse
+        parsed = urlparse(endpoint)
+        if parsed.scheme != 'https' or parsed.hostname != 'open.bigmodel.cn':
             raise ValueError("Invalid Zhipu AI endpoint. Must be an official Zhipu endpoint.")
         
         headers = {
@@ -573,9 +580,10 @@ class RAGService:
         model = config.get('model', 'gpt-3.5-turbo')
         timeout = config.get('timeout', self.DEFAULT_API_TIMEOUT)
         
-        # For OpenAI, we allow some flexibility for compatible APIs
-        # but still validate it's a proper HTTPS URL
-        if not endpoint.startswith('https://'):
+        # For OpenAI, validate it's a proper HTTPS URL
+        from urllib.parse import urlparse
+        parsed = urlparse(endpoint)
+        if parsed.scheme != 'https':
             raise ValueError("API endpoint must use HTTPS protocol")
         
         client = OpenAI(
